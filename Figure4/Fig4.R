@@ -1,5 +1,81 @@
 ####Bar plot of pilot samples for 4A#####
 
+pilot<-read.xlsx("v25data_pilotset_forheatmap.xlsx")
+
+pilotvars<-table(pilot$Variant.Details)
+pilotvars<-pilotvars[order(pilotvars, decreasing = T)]
+pilotvars<-as.data.frame(pilotvars)
+colnames(pilotvars)<-c("variant", "count")
+pilotvars
+#        variant count
+# 1           WT  1142
+# 5      B.1.1.7     6
+# 15  P1/B.1.351     1
+
+# 2        S691S     9 --> SPBS
+# 3        N679K     8 --> SPBS
+# 4        A684V     7 --> SPBS
+# 6        P681H     6 --> SPBS
+# 16 P681H+S691S     1 --> SPBS
+# 8        I692I     3 --> SPBS
+# 9        P681R     2 --> SPBS
+# 10       R682R     2 --> SPBS
+
+# 11       A699C     1 --> RDRP
+# 12    A702Stop     1 --> RDRP
+# 13       C697S     1 --> RDRP
+
+# 14 E484K+Q677H     1 --> RBM + PBS
+
+# 7        E484K     5 --> SRBM
+# 17       S494P     1 --> SRBM
+# 18       Y489Y     1 --> SRBM
+
+#so fixed order is
+orderedYax<-c("A702Stop", "A699C", "C697S", "E484K+Q677H", "P681H+S691S", "I692I", "S691S", "A684V", "R682R", "P681R", "P681H", "N679K", "S494P", "Y489Y", "E484K", "P1/B.1.351", "B.1.1.7", "WT" )
+pilotvars$variant_F<-factor(pilotvars$variant, levels=(orderedYax))
+
+pilotvars$category<-"S-Pbs"
+pilotvars[pilotvars$variant%in% c("E484K", "Y489Y", "S494P"),]$category<-"S-Rbm"
+pilotvars[pilotvars$variant == "E484K+Q677H",]$category<-"S-Rbm + S-Pbs"
+pilotvars[pilotvars$variant%in% c("C697S", "A699C", "A702Stop"),]$category<-"RdRP"
+pilotvars[pilotvars$variant == "WT",]$category<-"No Mutation"
+pilotvars[pilotvars$variant == "B.1.1.7",]$category<-"VoC"
+pilotvars[pilotvars$variant == "P1/B.1.351",]$category<-"VoC"
+
+collist<-c("VoC" = "red", "No Mutation" = "black", "S-Pbs" = "blue", "S-Rbm" = "orange", "S-Rbm + S-Pbs" = "gray", "RdRP" = "yellow" )
+
+
+#generate 2 copies of the graph, because we want to modify it in illustrator to show the lower values
+
+#full version showing the entire WT bar
+pilotvrs_full<-ggplot(pilotvars, aes(x = count, y = variant_F, fill = category)) + geom_col(colour="black") + xlab("Count of Pilot Samples") + 
+  ylab("Variant") + ggtitle("Pilot Set Variant Distribution") + scale_fill_manual(values=collist) +  theme_bw() +
+  scale_x_continuous(breaks=seq(0, 1200, 100), limits=c(0,1200)) +
+    theme(axis.title = element_text(size=10), legend.position = c("bottom"), plot.background = element_blank(),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),legend.text = element_text(size = 8),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),
+      axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 10))
+pilotvrs_full
+
+#cut version showing lower numbers
+pilotvrs_cut<-ggplot(pilotvars, aes(x = count, y = variant_F, fill = category)) + geom_col(colour="black") + xlab("Count of Pilot Samples") + 
+  ylab("Variant") + ggtitle("Pilot Set Variant Distribution") + scale_fill_manual(values=collist) +  theme_bw() +
+  #scale_x_continuous(breaks=seq(0, 20, 10), limits=c(0,20)) + 
+  coord_cartesian(xlim=c(0,10)) +
+    theme(axis.title = element_text(size=10), legend.position = c("bottom"), plot.background = element_blank(),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),legend.text = element_text(size = 8),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),
+      axis.text.x = element_text(size = 10, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 10))
+pilotvrs_cut
+
+pdf("pilotset_fig4A.pdf", width = 8, height = 6)
+grid.arrange(pilotvrs_full, pilotvrs_cut, ncol=2)
+dev.off()
 
 
 ###Binarized Heatmap For Fig 4C####
