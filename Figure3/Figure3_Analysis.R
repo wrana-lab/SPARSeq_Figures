@@ -12,7 +12,7 @@ library(ggplot2)
 ##This version of analysis uses proportion of sample per day to eliminate effects of different number of samples per day#
 #start from main dataset:
 
-re_filtered_maindataset<-read.xlsx("../filtered_data_for_paper_v23_June2024_CleanedVariants_GithubVersion_LC.xlsx")
+re_filtered_maindataset<-read.xlsx("../filtered_data_for_paper_v25.xlsx")
 #adjust dates
 re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
 re_filtered_maindataset$Variant_Name
@@ -48,7 +48,7 @@ head(data_for_hm_perday, 120)
 data_for_hm_perday$DailyPercent<-data_for_hm_perday$VariantSum/data_for_hm_perday$TotalDailySum * 100
 
 #save file
-write.xlsx(data_for_hm_perday, file="data_for_hm_perDAY_PROPORTION_crunchedDataForCompetitions_v24dataset.xlsx")
+write.xlsx(data_for_hm_perday, file="data_for_hm_perDAY_PROPORTION_crunchedDataForCompetitions_v25dataset.xlsx")
 
 
 ####organize data####
@@ -60,7 +60,7 @@ write.xlsx(data_for_hm_perday, file="data_for_hm_perDAY_PROPORTION_crunchedDataF
 
 #reload and get individual files for each variant
 
-data_for_hm_perday<-read.xlsx("data_for_hm_perDAY_PROPORTION_crunchedDataForCompetitions_v24dataset.xlsx")
+data_for_hm_perday<-read.xlsx("data_for_hm_perDAY_PROPORTION_crunchedDataForCompetitions_v25dataset.xlsx")
 data_for_hm_perday$day<-as.Date(data_for_hm_perday$Date.of.collection.Prcsd, origin = "1899-12-30")
 #do this as proportion not percent
 data_for_hm_perday$DailyPercent<-data_for_hm_perday$DailyPercent/100
