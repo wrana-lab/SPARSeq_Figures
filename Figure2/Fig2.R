@@ -82,3 +82,96 @@ overallplot1_capped2k
 pdf("combined_weekly_data_v25_Cappedat1000.pdf", width = 18, height = 6 )
 overallplot1_capped2k
 dev.off()
+
+
+#####Fig 2 lower panel: calculate the transitional weeks and make a table ###########
+#get tables with % by week for data without + and with + 
+re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25.xlsx")
+#fix dates
+re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
+
+data_for_hm<-re_filtered_maindataset
+data_for_hm$Date.of.collection.Prcsd<-lubridate::parse_date_time(data_for_hm$Date.of.collection,"ymd")
+data_for_hm<-data_for_hm[order(data_for_hm$Date.of.collection.Prcsd, decreasing = F),]
+data_for_hm$rounded_week<-floor_date(data_for_hm$Date.of.collection.Prcsd, "week")
+#get reordered date
+data_for_hm$dateforgraph<-
+  paste(month(data_for_hm$rounded_week),day(data_for_hm$rounded_week),year(data_for_hm$rounded_week), sep = "-" )
+
+#get order then #force order  
+countsperroundedweek_list<-unique(data_for_hm$dateforgraph)
+countsperroundedweek_list_modified<-c(countsperroundedweek_list[1:2], "12-27-2020", countsperroundedweek_list[3], "1-10-2021", countsperroundedweek_list[4:118])
+#counts per week using Variant Name New specifically 
+data_for_hm_perweek<-as.data.frame(data_for_hm %>%  group_by(dateforgraph) %>%  dplyr::count(Variant_Name_New))
+
+#force order  
+data_for_hm_perweek$dateforgraph_factor<-factor(data_for_hm_perweek$dateforgraph, ordered=T, levels=countsperroundedweek_list)
+
+#get date list
+#get proportion per week
+data_for_hm_perweek_weeklysum<-as.data.frame(data_for_hm %>% group_by(dateforgraph) %>% dplyr::count())
+colnames(data_for_hm_perweek_weeklysum)<-c("dateforgraph", "weeklysum")
+#merge weekly sum to dataframe for heatmap
+data_for_hm_perweek<-merge(data_for_hm_perweek, data_for_hm_perweek_weeklysum, by ="dateforgraph", all=T)
+
+#get percent
+data_for_hm_perweek$percentperweek<-data_for_hm_perweek$n / data_for_hm_perweek$weeklysum * 100
+
+#order by actual dates properly
+class(data_for_hm_perweek$dateforgraph_factor)
+
+data_for_hm_perweek$actualdate<-as.Date(data_for_hm_perweek$dateforgraph, format = "%m-%d-%Y")
+data_for_hm_perweek<-data_for_hm_perweek[order(data_for_hm_perweek$actualdate, -data_for_hm_perweek$percentperweek ),]
+
+data_for_hm_perweek<-data_for_hm_perweek[,c("dateforgraph", "actualdate", "Variant_Name_New", "n", "weeklysum", "percentperweek" )]
+head(data_for_hm_perweek, 12)
+#write.xlsx(data_for_hm_perweek, "percents_per_week_v25data_v1.xlsx")
+
+###repeat the table but keep the WT and WT+ combined 
+re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25.xlsx")
+#fix dates
+re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
+
+data_for_hm<-re_filtered_maindataset
+data_for_hm$Date.of.collection.Prcsd<-lubridate::parse_date_time(data_for_hm$Date.of.collection,"ymd")
+data_for_hm<-data_for_hm[order(data_for_hm$Date.of.collection.Prcsd, decreasing = F),]
+data_for_hm$rounded_week<-floor_date(data_for_hm$Date.of.collection.Prcsd, "week")
+#get reordered date
+data_for_hm$dateforgraph<-
+  paste(month(data_for_hm$rounded_week),day(data_for_hm$rounded_week),year(data_for_hm$rounded_week), sep = "-" )
+
+#get order then #force order  
+countsperroundedweek_list<-unique(data_for_hm$dateforgraph)
+countsperroundedweek_list_modified<-c(countsperroundedweek_list[1:2], "12-27-2020", countsperroundedweek_list[3], "1-10-2021", countsperroundedweek_list[4:118])
+#counts per week using Variant Name New specifically 
+#this time remove the + 
+data_for_hm$Variant_Name_New_Cut<-gsub("\\+", "", data_for_hm$Variant_Name_New)
+data_for_hm_perweek<-as.data.frame(data_for_hm %>%  group_by(dateforgraph) %>%  dplyr::count(Variant_Name_New_Cut))
+
+#force order  
+data_for_hm_perweek$dateforgraph_factor<-factor(data_for_hm_perweek$dateforgraph, ordered=T, levels=countsperroundedweek_list)
+
+#get date list
+#get proportion per week
+data_for_hm_perweek_weeklysum<-as.data.frame(data_for_hm %>% group_by(dateforgraph) %>% dplyr::count())
+colnames(data_for_hm_perweek_weeklysum)<-c("dateforgraph", "weeklysum")
+#merge weekly sum to dataframe for heatmap
+data_for_hm_perweek<-merge(data_for_hm_perweek, data_for_hm_perweek_weeklysum, by ="dateforgraph", all=T)
+
+#get percent
+data_for_hm_perweek$percentperweek<-data_for_hm_perweek$n / data_for_hm_perweek$weeklysum * 100
+
+#order by actual dates properly
+class(data_for_hm_perweek$dateforgraph_factor)
+
+data_for_hm_perweek$actualdate<-as.Date(data_for_hm_perweek$dateforgraph, format = "%m-%d-%Y")
+data_for_hm_perweek<-data_for_hm_perweek[order(data_for_hm_perweek$actualdate, -data_for_hm_perweek$percentperweek ),]
+
+data_for_hm_perweek<-data_for_hm_perweek[,c("dateforgraph", "actualdate", "Variant_Name_New_Cut", "n", "weeklysum", "percentperweek" )]
+head(data_for_hm_perweek, 12)
+write.xlsx(data_for_hm_perweek, "percents_per_week_vocAndvocPluscombined_Datav25.xlsx")
+
+
+
+
+
