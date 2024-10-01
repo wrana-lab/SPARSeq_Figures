@@ -1,3 +1,6 @@
+####Bar plot of pilot samples for 4A#####
+
+
 
 ###Binarized Heatmap For Fig 4C####
 
@@ -100,3 +103,233 @@ pdf("VariantHeatmap1_AllVariantsBinarized_datav25_orderedbyDate.pdf", height = 1
 hm_4c
 hm_4c
 dev.off()
+
+
+
+
+####Variant Curves for panel 4D#####
+###get each variant and its + alone on x axis, shown as % of that group
+setwd("/Volumes/PromisePegasus/SPAR_SEQ/revisions_Sep2024/")
+re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25_June2024_CleanedVariants_GithubVersion_RDRPAdj_LC.xlsx")
+#fix dates
+re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
+re_filtered_maindataset$Date.of.collection.Prcsd<-lubridate::parse_date_time(re_filtered_maindataset$Date.of.collection,"ymd")
+
+# #reorder by date 
+re_filtered_maindataset<-re_filtered_maindataset[order(re_filtered_maindataset$Date.of.collection.Prcsd, decreasing = F),]
+week(re_filtered_maindataset$Date.of.collection.Prcsd)
+# https://lubridate.tidyverse.org/reference/round_date.html#rounding-up-date-objects-1
+re_filtered_maindataset$rounded_week<-floor_date(re_filtered_maindataset$Date.of.collection.Prcsd, "week")
+
+#get reordered date
+re_filtered_maindataset$dateforgraph<-
+  paste(month(re_filtered_maindataset$rounded_week),
+        day(re_filtered_maindataset$rounded_week),
+        year(re_filtered_maindataset$rounded_week), sep = "-" )
+
+#get order then #force order  
+countsperroundedweek_list<-unique(re_filtered_maindataset$dateforgraph)
+countsperroundedweek_list_modified<-c(countsperroundedweek_list[1:2], "12-27-2020", countsperroundedweek_list[3], "1-10-2021", countsperroundedweek_list[4:118])
+re_filtered_maindataset$dateforgraph_factor<-factor(re_filtered_maindataset$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified)
+
+###extract colours matching overall plot 
+library(scales)
+#hex <- hue_pal()(13)
+# #alpha      b/g         delta.    eta         mu    omicron    2.75.    2/3       4/5       other     WT        XBB         XBB.1.5
+#c("#F8766D" "#E18A00" "#BE9C00" "#8CAB00" "#24B700" "#00BE70" "#00C1AB" "#00BBDA" "#00ACFC" "#8B93FF" "#D575FE" "#F962DD" "#FF65AC")
+
+###WT subset###
+wtonly<-subset(re_filtered_maindataset, re_filtered_maindataset$Variant_Name_New == "WT" | re_filtered_maindataset$Variant_Name_New == "WT+" )
+wtonly_weekly_tally<-as.data.frame(wtonly %>% group_by(Variant_Name_New, dateforgraph) %>% tally())
+colnames(wtonly_weekly_tally)<-c("Variant_Name_New", "dateforgraph", "weeklysum")
+#get total per annotation per week [Variant_Name]
+wtonly_perweek<-as.data.frame(wtonly %>% 
+   group_by(Variant_Name_New) %>% 
+   tally())
+#merge weekly sum to dataframe for heatmap
+wtonly_weekly<-merge(wtonly_perweek, wtonly_weekly_tally, by ="Variant_Name_New", all=T)
+###divide by weekly total to get proportion
+wtonly_weekly$weekly_proportion<- wtonly_weekly$weeklysum / wtonly_weekly$n * 100
+#force order  - need to keep dates between highest and lowest 
+countsperroundedweek_list_modified_wt<-countsperroundedweek_list_modified[countsperroundedweek_list_modified %in% wtonly_weekly$dateforgraph]
+wtonly_weekly$dateforgraph_factor<-factor(wtonly_weekly$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified_wt)
+wtonly_weekly$dateforgraph_date<-lubridate::parse_date_time(wtonly_weekly$dateforgraph,"mdy")
+as.Date(wtonly_weekly$dateforgraph_date)
+
+pairgraph_WT2<-ggplot(wtonly_weekly, aes(x=as.Date(dateforgraph_date), y=weekly_proportion,
+                group = Variant_Name_New, linetype = Variant_Name_New)) + scale_x_date(date_breaks = "1 month", date_labels = "%b %Y" )+
+  scale_linetype_manual(values = c("WT" = 1, "WT+" = 2), name = "Variant") + 
+  geom_smooth(se=F, colour = "#DF70F8") + xlab("Collection Date") + ylab("% of Total Cases [within WT+/-]") + theme_bw() + #scale_x_discrete(drop=FALSE) +
+  ggtitle('SPARseq WT Data: Dec 2020 - March 2023') + 
+  theme(axis.title = element_text(size=12), legend.position = c("right"), plot.background = element_blank(),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 8))
+    
+pdf("WT_weekly_data_v25Data.pdf", width = 8, height = 4 )
+pairgraph_WT2
+dev.off()
+
+
+###alpha
+alphaonly<-subset(re_filtered_maindataset, re_filtered_maindataset$Variant_Name_New == "Alpha" | re_filtered_maindataset$Variant_Name_New == "Alpha+" )
+alphaonly_weekly_tally<-as.data.frame(alphaonly %>% group_by(Variant_Name_New, dateforgraph) %>% tally())
+colnames(alphaonly_weekly_tally)<-c("Variant_Name_New", "dateforgraph", "weeklysum")
+#get total per annotation per week [Variant_Name]
+alphaonly_perweek<-as.data.frame(alphaonly %>% 
+   group_by(Variant_Name_New) %>% 
+   tally())
+#merge weekly sum to dataframe for heatmap
+alphaonly_weekly<-merge(alphaonly_perweek, alphaonly_weekly_tally, by ="Variant_Name_New", all=T)
+###divide by weekly total to get proportion
+alphaonly_weekly$weekly_proportion<- alphaonly_weekly$weeklysum / alphaonly_weekly$n * 100
+#force order  
+alphaonly_weekly$dateforgraph_factor<-factor(alphaonly_weekly$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified)
+alphaonly_weekly$dateforgraph_date<-lubridate::parse_date_time(alphaonly_weekly$dateforgraph,"mdy")
+
+pairgraph_alpha2<-ggplot(alphaonly_weekly, aes(x=as.Date(dateforgraph_date), y=weekly_proportion,
+                group = Variant_Name_New, linetype = Variant_Name_New)) +  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y" )+
+  scale_linetype_manual(values = c("Alpha" = 1, "Alpha+" = 2), name = "Variant") + 
+  geom_smooth(se=F, colour = "#F8766D") + xlab("Collection Date") + ylab("% of Total Cases [within Alpha+/-]") + theme_bw() + 
+  ggtitle('SPARseq Alpha Data: Dec 2020 - March 2023') +
+  theme(axis.title = element_text(size=12), legend.position = c("right"), plot.background = element_blank(),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 8))
+    
+pdf("alpha_weekly_data_v25Data.pdf", width = 8, height = 4 )
+pairgraph_alpha2
+dev.off()
+
+
+###delta
+deltaonly<-subset(re_filtered_maindataset, re_filtered_maindataset$Variant_Name_New == "Delta" | re_filtered_maindataset$Variant_Name_New == "Delta+" )
+deltaonly_weekly_tally<-as.data.frame(deltaonly %>% group_by(Variant_Name_New, dateforgraph) %>% tally())
+colnames(deltaonly_weekly_tally)<-c("Variant_Name_New", "dateforgraph", "weeklysum")
+#get total per annotation per week [Variant_Name]
+deltaonly_perweek<-as.data.frame(deltaonly %>% 
+   group_by(Variant_Name_New) %>% 
+   tally())
+#merge weekly sum to dataframe for heatmap
+deltaonly_weekly<-merge(deltaonly_perweek, deltaonly_weekly_tally, by ="Variant_Name_New", all=T)
+###divide by weekly total to get proportion
+deltaonly_weekly$weekly_proportion<- deltaonly_weekly$weeklysum / deltaonly_weekly$n * 100
+#force order  
+deltaonly_weekly$dateforgraph_factor<-factor(deltaonly_weekly$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified)
+deltaonly_weekly$dateforgraph_date<-lubridate::parse_date_time(deltaonly_weekly$dateforgraph,"mdy")
+
+pairgraph_delta2<-ggplot(deltaonly_weekly, aes(x=as.Date(dateforgraph_date), y=weekly_proportion,
+                group = Variant_Name_New, linetype = Variant_Name_New)) +  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y" )+
+  scale_linetype_manual(values = c("Delta" = 1, "Delta+" = 2), name = "Variant") + 
+  geom_smooth(se=F, colour = "#B79F00") + xlab("Collection Date") + ylab("% of Total Cases [within Delta+/-]") + theme_bw() + 
+  ggtitle('SPARseq Delta Data: Dec 2020 - March 2023') +
+  theme(axis.title = element_text(size=12), legend.position = c("right"), plot.background = element_blank(),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 8))
+    
+pdf("delta_weekly_data_v25Data_separate.pdf", width = 8, height = 4 )
+pairgraph_delta2
+dev.off()
+
+
+####omicron
+omicrononly<-subset(re_filtered_maindataset, re_filtered_maindataset$Variant_Name_New == "Omicron" | re_filtered_maindataset$Variant_Name_New == "Omicron+" )
+omicrononly_weekly_tally<-as.data.frame(omicrononly %>% group_by(Variant_Name_New, dateforgraph) %>% tally())
+colnames(omicrononly_weekly_tally)<-c("Variant_Name_New", "dateforgraph", "weeklysum")
+#get total per annotation per week [Variant_Name]
+omicrononly_perweek<-as.data.frame(omicrononly %>% 
+   group_by(Variant_Name_New) %>% 
+   tally())
+#merge weekly sum to dataframe for heatmap
+omicrononly_weekly<-merge(omicrononly_perweek, omicrononly_weekly_tally, by ="Variant_Name_New", all=T)
+###divide by weekly total to get proportion
+omicrononly_weekly$weekly_proportion<- omicrononly_weekly$weeklysum / omicrononly_weekly$n * 100
+#force order  
+omicrononly_weekly$dateforgraph_factor<-factor(omicrononly_weekly$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified)
+omicrononly_weekly$dateforgraph_date<-lubridate::parse_date_time(omicrononly_weekly$dateforgraph,"mdy")
+
+pairgraph_omicron2<-ggplot(omicrononly_weekly, aes(x=as.Date(dateforgraph_date), y=weekly_proportion,
+                group = Variant_Name_New, linetype = Variant_Name_New)) +  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y" )+
+  scale_linetype_manual(values = c("Omicron" = 1, "Omicron+" = 2), name = "Variant") + 
+  geom_smooth(se=F, colour = "#00BC56") + xlab("Collection Date") + ylab("% of Total Cases [within Omicron+/-]") + theme_bw() +
+  ggtitle('SPARseq Omicron Data: Dec 2020 - March 2023') +
+  theme(axis.title = element_text(size=12), legend.position = c("right"), plot.background = element_blank(),
+      plot.title = element_text(hjust=0.5), 
+      panel.border = element_rect(colour = "black", fill=NA, size=1),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 8))
+    
+pdf("omicron_weekly_data_v25Data.pdf", width = 8, height = 4 )
+pairgraph_omicron2
+dev.off()
+
+
+###ba 23
+omicrononly<-subset(re_filtered_maindataset, re_filtered_maindataset$Variant_Name_New == "Omicron BA.2/3" | re_filtered_maindataset$Variant_Name_New == "Omicron BA.2/3+" )
+omicrononly_weekly_tally<-as.data.frame(omicrononly %>% group_by(Variant_Name_New, dateforgraph) %>% tally())
+colnames(omicrononly_weekly_tally)<-c("Variant_Name_New", "dateforgraph", "weeklysum")
+#get total per annotation per week [Variant_Name]
+omicrononly_perweek<-as.data.frame(omicrononly %>% 
+   group_by(Variant_Name_New) %>% 
+   tally())
+#merge weekly sum to dataframe for heatmap
+omicrononly_weekly<-merge(omicrononly_perweek, omicrononly_weekly_tally, by ="Variant_Name_New", all=T)
+###divide by weekly total to get proportion
+omicrononly_weekly$weekly_proportion<- omicrononly_weekly$weeklysum / omicrononly_weekly$n * 100
+#force order  
+omicrononly_weekly$dateforgraph_factor<-factor(omicrononly_weekly$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified)
+omicrononly_weekly$dateforgraph_date<-lubridate::parse_date_time(omicrononly_weekly$dateforgraph,"mdy")
+
+pairgraph_omicron2<-ggplot(omicrononly_weekly, aes(x=as.Date(dateforgraph_date), y=weekly_proportion,
+                group = Variant_Name_New, linetype = Variant_Name_New)) +  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y" )+
+  scale_linetype_manual(values = c("Omicron BA.2/3" = 1, "Omicron BA.2/3+" = 2), name = "Variant") + 
+  geom_smooth(se=F, colour = "#00BFC4") + xlab("Collection Date") + ylab("% of Total Cases [within Omicron BA.2/3+/-]") + theme_bw() + 
+  ggtitle('SPARseq Omicron BA.2/3 Data: Dec 2020 - March 2023') +
+  theme(axis.title = element_text(size=12), legend.position = c("right"), plot.background = element_blank(),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 8))
+    
+pdf("omicronBA23_weekly_data_v25Data.pdf", width = 8, height = 4 )
+pairgraph_omicron2
+dev.off()
+
+
+####ba 45
+omicrononly<-subset(re_filtered_maindataset, re_filtered_maindataset$Variant_Name_New == "Omicron BA.4/5" | re_filtered_maindataset$Variant_Name_New == "Omicron BA.4/5+" )
+omicrononly_weekly_tally<-as.data.frame(omicrononly %>% group_by(Variant_Name_New, dateforgraph) %>% tally())
+colnames(omicrononly_weekly_tally)<-c("Variant_Name_New", "dateforgraph", "weeklysum")
+#get total per annotation per week [Variant_Name]
+omicrononly_perweek<-as.data.frame(omicrononly %>% 
+   group_by(Variant_Name_New) %>% 
+   tally())
+#merge weekly sum to dataframe for heatmap
+omicrononly_weekly<-merge(omicrononly_perweek, omicrononly_weekly_tally, by ="Variant_Name_New", all=T)
+###divide by weekly total to get proportion
+omicrononly_weekly$weekly_proportion<- omicrononly_weekly$weeklysum / omicrononly_weekly$n * 100
+#force order  
+omicrononly_weekly$dateforgraph_factor<-factor(omicrononly_weekly$dateforgraph, ordered=T, levels=countsperroundedweek_list_modified)
+omicrononly_weekly$dateforgraph_date<-lubridate::parse_date_time(omicrononly_weekly$dateforgraph,"mdy")
+
+pairgraph_omicron2<-ggplot(omicrononly_weekly, aes(x=as.Date(dateforgraph_date), y=weekly_proportion,
+                group = Variant_Name_New, linetype = Variant_Name_New)) +  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y" )+
+  scale_linetype_manual(values = c("Omicron BA.4/5" = 1, "Omicron BA.4/5+" = 2), name = "Variant") + 
+  geom_smooth(se=F, colour = "#00B6EB") + xlab("Collection Date") + ylab("% of Total Cases [within Omicron BA.4/5+/-]") + theme_bw() + 
+  ggtitle('SPARseq Omicron BA.4/5 Data: Dec 2020 - April 2023') +
+  theme(axis.title = element_text(size=12), legend.position = c("right"), plot.background = element_blank(),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      axis.text.y = element_text(hjust = 1, size = 8))
+    
+pdf("omicronBA45_weekly_data_v25Data.pdf", width = 8, height = 4 )
+pairgraph_omicron2
+dev.off()
+
+
+
