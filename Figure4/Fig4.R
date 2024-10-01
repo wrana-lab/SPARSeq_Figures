@@ -185,8 +185,8 @@ dev.off()
 
 ####Variant Curves for panel 4D#####
 ###get each variant and its + alone on x axis, shown as % of that group
-setwd("/Volumes/PromisePegasus/SPAR_SEQ/revisions_Sep2024/")
-re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25_June2024_CleanedVariants_GithubVersion_RDRPAdj_LC.xlsx")
+
+re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25.xlsx")
 #fix dates
 re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
 re_filtered_maindataset$Date.of.collection.Prcsd<-lubridate::parse_date_time(re_filtered_maindataset$Date.of.collection,"ymd")
