@@ -1,8 +1,6 @@
 ####1e bar graph of runs per week.#####
 
 ###Plot runs per week/samples per week as measure of consistency##
-#try bar graph of runs per week
-setwd("/Volumes/PromisePegasus/SPAR_SEQ/revisions_Sep2024/")
 re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25.xlsx")
 #fix dates
 re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
