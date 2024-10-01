@@ -1,3 +1,3 @@
 Script for figure 2 of SPARseq paper. 
 
-TO DO add lower panel.
+Lower panel (heatmap) was generated in Prism with the excel files included here. 
