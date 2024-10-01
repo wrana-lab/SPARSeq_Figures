@@ -1,4 +1,4 @@
-Script for Figure 4 from SPARseq paper.
+This folder contains the R script and intermediate files needed to replicate Figure 4 from the Covid-19 SPAR-seq paper.
 
 The dendrogram of WGS data in 4B was made in Genomics Workbench.
 
