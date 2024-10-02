@@ -1,6 +1,8 @@
 # SPARSeq_Figures
 Code for figures for the Covid-19 SPARseq paper, 2024. 
 
+The analysis can be replicated starting from the main aggregated table of results, available on zenodo: ...
+
 Essential R packages for the analysis include:
 
 openxlsx: https://cran.r-project.org/web/packages/openxlsx/index.html
