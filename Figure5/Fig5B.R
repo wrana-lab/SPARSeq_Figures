@@ -107,7 +107,7 @@ submainlist_agg<-read.xlsx("Top14SubvariantHeatmap_forMADcalc_v25data.xlsx")
 #we decided to split these into short and long lasting variants
 subvar_order_short<-c( "B.1.1.529 (BA.4/BA.5)+A672G", "B.1.1.7+F490L",  "B.1.617.2+A688V", "B.1.617.2+R682R",  "S691S",  "A684V") #group 1
 subvar_order_long<-c("B.1.1.529 (BA.2.75)+F490S",  "B.1.1.529+P681R", "P681H", "P681R",   "N501Y+P681R",  "N501Y", "E484K+P681H",
-                 "E484K")#, "B.1.1.7+E484K" ) #group 2
+                 "E484K")
 subvar_order<-c(subvar_order_short, subvar_order_long)
 
 submainlist_short<-subset(subsetdata, subsetdata$Variant.Details %in% subvar_order_short)
@@ -133,11 +133,10 @@ forbarplot5b$Variant.Details_F<-factor(forbarplot5b$Variant.Details, levels=c("B
 forbarplot5b$Category_F<-factor(forbarplot5b$Category, levels = c("Variant-defining residue(s)", "Other residue(s)"))
 
 forbarplot5b_plot<-ggplot(forbarplot5b, aes(x=medianN, y = Variant.Details_F, fill = Category_F)) + geom_col() + 
-  ggtitle("5B median bars") + 
-  theme_bw() + #scale_x_date(date_labels="%b %d %Y", date_breaks = "1 month") +
+  ggtitle("5B median bars") +   theme_bw() + 
   theme(axis.title = element_text(size=0), legend.position = c("right"), plot.background = element_blank(),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      plot.title = element_text(hjust=0.5), 
       panel.border = element_rect(colour = "black", fill=NA, size=1),
       axis.text.x = element_text(size = 8,  hjust = 0.5),
       axis.text.y = element_text(hjust = 1, size = 8))
@@ -155,3 +154,26 @@ median(forbarplot5b$medianN) #46
 ###end of bar plot of residue categories
 
 ###begin heatmap of days since first case####
+#check that each one actually has a value at 0
+submainlist_agg[submainlist_agg$NumDaysSince1stCase<1,]
+#write.xlsx(submainlist_agg, file = "data_for_heatmap5b_v25data.xlsx")
+submainlist_agg<-read.xlsx("data_for_heatmap5b_v25data.xlsx")
+
+keysubvar_plot_all<-ggplot(submainlist_agg, aes(x=NumDaysSince1stCase, y=Variant.Details_F, fill = n)) +
+    geom_tile() + ggtitle("Key Subvariants: Days Since 1st Case") + scale_fill_gradientn(colors=c(low = 'thistle2',  high = 'black')) +
+  xlab("Days Since 1st Case of Subvariant") + ylab("Subvariant") + theme_bw() + 
+  guides(fill = guide_colourbar(title = "Number of cases")) + scale_x_continuous(limits = c(-2,200), breaks = c(0,50,100,150,200)) +
+  theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),
+      axis.text.x = element_text(size = 12,  hjust = 0.5),
+      axis.text.y = element_text(hjust = 1, size = 8))
+keysubvar_plot_all
+
+
+pdf("heatmap5B_timebased_topsubvariants_datav25.pdf", width = 8, height = 4)
+keysubvar_plot_all
+dev.off()
+
+###End of 5b####
