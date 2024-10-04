@@ -16,7 +16,6 @@ library("dplyr")
 library("openxlsx")
 library("stringr")
 
-setwd("/Volumes/PromisePegasus/SPAR_SEQ/revisions_Sep2024/bc_processing_and_supfig567/bc1/")
 
 ###Run 27 copy 1 - originally a V0 run####
 ##import row and col bowtie outputs
