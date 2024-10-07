@@ -179,6 +179,9 @@ table(data_for_mvp_rdrp_split$RdRP_aa_var)
 
 list_of_datasets <- list("SRBD" = data_for_mvp_srbd_split, "SPBS" = data_for_mvp_spbs_split, "RDRP" = data_for_mvp_rdrp_split)
 write.xlsx(list_of_datasets, file = "minor_mutation_data_v25_includesWT+.xlsx")
+#this file may occasionally differ from other aggregated tables of for example final variant calls
+#since there are a few instances like in RDRP where long stretches of AA changes are detected but we suspect it is just a low quality amplicon result
+#so those aren't reported to the final variant call of a sample
 
 
 ########fig 5 pink heatmaps ######
@@ -219,7 +222,7 @@ srbd_for_bp<-subset(srbd_for_bp, srbd_for_bp$Variant_Name_New_All != "XBB")
 srbd_for_bp<-subset(srbd_for_bp, srbd_for_bp$Variant_Name_New_All != "WT")
 
 table(srbd_for_bp$Variant_Name_New_All)
-srbd_for_bp[srbd_for_bp$Variant_Name_New_All == "Beta",]$Variant_Name_New_All<-"Beta/Gamma"
+#srbd_for_bp[srbd_for_bp$Variant_Name_New_All == "Beta",]$Variant_Name_New_All<-"Beta/Gamma"
 srbd_for_bp<-subset(srbd_for_bp, srbd_for_bp$srbddaas != "WT")
 
 
