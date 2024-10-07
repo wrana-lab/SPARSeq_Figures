@@ -159,6 +159,10 @@ submainlist_agg[submainlist_agg$NumDaysSince1stCase<1,]
 #write.xlsx(submainlist_agg, file = "data_for_heatmap5b_v25data.xlsx")
 submainlist_agg<-read.xlsx("data_for_heatmap5b_v25data.xlsx")
 
+submainlist_agg$Variant.Details_F<-factor(submainlist_agg$Variant.Details, levels=c("B.1.1.529 (BA.4/BA.5)+A672G", "B.1.1.7+F490L", "B.1.617.2+A688V", "B.1.617.2+R682R", "S691S", 
+                                                                              "A684V", "B.1.1.529 (BA.2.75)+F490S","B.1.1.529+P681R", "P681H", "P681R", "N501Y+P681R", "N501Y",
+                                                                              "E484K+P681H", "E484K"))
+
 keysubvar_plot_all<-ggplot(submainlist_agg, aes(x=NumDaysSince1stCase, y=Variant.Details_F, fill = n)) +
     geom_tile() + ggtitle("Key Subvariants: Days Since 1st Case") + scale_fill_gradientn(colors=c(low = 'thistle2',  high = 'black')) +
   xlab("Days Since 1st Case of Subvariant") + ylab("Subvariant") + theme_bw() + 
