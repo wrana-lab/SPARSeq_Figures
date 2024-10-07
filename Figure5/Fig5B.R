@@ -7,15 +7,15 @@ alldatareload<-read.xlsx("filtered_data_for_paper_v25.xlsx")
 alldatareload$Date.of.collection<-as.Date(alldatareload$Date.of.collection, origin = "1899-12-30") #
 
 ###get count of all subvars and subvars per main var###
-allsubvar<-table(re_filtered_maindataset$Variant.Details)
+allsubvar<-table(alldatareload$Variant.Details)
 allsubvar<-allsubvar[order(allsubvar, decreasing = T)]
 write.xlsx(allsubvar, file="AllSubvariants_v25.xlsx")
 
 ##then break down by main var
 #so group by variant name new and then variant details within that
-re_filtered_maindataset$Variant_Name_New_Cut<-gsub("\\+", "", re_filtered_maindataset$Variant_Name_New)
+alldatareload$Variant_Name_New_Cut<-gsub("\\+", "", alldatareload$Variant_Name_New)
 
-data_for_bp<-as.data.frame(re_filtered_maindataset %>%
+data_for_bp<-as.data.frame(alldatareload %>%
    group_by(Variant_Name_New_Cut) %>%
    dplyr::count(Variant.Details))
 #organized subvar data
