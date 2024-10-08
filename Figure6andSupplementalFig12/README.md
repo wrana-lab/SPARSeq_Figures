@@ -23,6 +23,6 @@ Sup Fig 12 E shows the aligned S-Pbs pQS per VOC.
 
 The script ExampleSubsetProcessing.R shows an example of how we compiled the Delta subset quasispecies runs at different percentage cutoffs to determine a finalized cutoff. 
 
-The script XXX.R shows an example of how we compare the two final copies of the bc1 and bc2 data for our Delta subset, using the x-intercept based cutoffs from the above example, to get a final list of pQS which are seen in both copies of individual samples. In this script the Bioconductor package Biostrings (https://bioconductor.org/packages/release/bioc/html/Biostrings.html) is needed for easy translation of nucleotides to amino acids.
+The script ExampleFinalizedCutoffProcessing.R shows an example of how we compare the two final copies of the bc1 and bc2 data for our Delta subset, using the x-intercept based cutoffs from the above example, to get a final list of pQS which are seen in both copies of individual samples. In this script the Bioconductor package Biostrings (https://bioconductor.org/packages/release/bioc/html/Biostrings.html) is needed for easy translation of nucleotides to amino acids.
 
-
+The outputs of the second script are later aggregated per variant - see subfolder Figure6CandSupplemental13-14.
