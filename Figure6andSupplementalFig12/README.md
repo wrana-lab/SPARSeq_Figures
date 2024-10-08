@@ -1,4 +1,4 @@
-Script for Figure 6 and examples of Supplemental Figure 12 analysis. 
+R scripts for Figure 6 and examples of Supplemental Figure 12 analysis:
 
 Figure 6 A shows the flowchart of our analysis process.
 
