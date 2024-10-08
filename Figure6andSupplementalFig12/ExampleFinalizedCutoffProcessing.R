@@ -54,8 +54,8 @@ bc2countlist<-bc2countlist[bc2countlist$total_SRBD_count > 32000,]
 #keep only those samples which had at least 32k detected Srbm reads according to the python scipt analysis.
 
 ##combine the sample ID and sequence because we need to be able to compare if the same sample has the same sequences in both copies of the analysis 
-bc1_aligned_list_merged<-bc1_aligned_list #bc1_aligned_list_merged$exp<-NULL
-bc2_aligned_list_merged<-bc2_aligned_list #bc2_aligned_list_merged$exp<-NULL
+bc1_aligned_list_merged<-bc1_aligned_list
+bc2_aligned_list_merged<-bc2_aligned_list
 bc1_aligned_list_merged$mergedsamplesequence<-paste(bc1_aligned_list_merged$sampleID, bc1_aligned_list_merged$seq_chars, sep = "_")
 bc2_aligned_list_merged$mergedsamplesequence<-paste(bc2_aligned_list_merged$sampleID, bc2_aligned_list_merged$seq_chars, sep = "_")
 
