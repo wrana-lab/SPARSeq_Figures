@@ -165,18 +165,7 @@ hm_4c<-ggplot(data_for_hm_perweek_binary_ordered, aes(x=dateforgraph_factor, y=o
       axis.text.x = element_text(size = 9, angle = 45, hjust = 1), axis.text.y = element_text(hjust = 1, size = 4)  ) 
 hm_4c
 
-hm_4c<-ggplot(data_for_hm_perweek_binary_ordered, aes(x=dateforgraph_factor, y=ordered_date, fill = (binary) )) + 
-  ggtitle("Dec 2020 to March 2023: All Variants, Binarized [ordered by date of first appearance]") +
-  geom_tile() + xlab("Week") + ylab("Variant") + labs(fill="Presence of Variant") + theme_bw() +
-  scale_fill_gradientn(colors=c(low = 'white',  high = 'black'), limits=c(0,1), breaks=c(0,1) )+
-  theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(), plot.title = element_text(hjust=0.5),
-      panel.border = element_rect(colour = "black", fill=NA, size=1), 
-      axis.text.x = element_blank(), axis.text.y = element_blank())
-hm_4c
-
 pdf("VariantHeatmap1_AllVariantsBinarized_datav25_orderedbyDate.pdf", height = 17, width = 17)
-hm_4c
 hm_4c
 dev.off()
 
