@@ -130,53 +130,7 @@ alpha_processed_5days$EndDayNum<-as.numeric(alpha_processed_5days$EndDayNum)
 #write.xlsx(alpha_processed_5days, "finalized_alpha_processed_imputed_5days.xlsx")
 alpha_processed_5days<-read.xlsx("finalized_alpha_processed_imputed_5days.xlsx")
 
-alpha1<-ggplot(cutdata_alpha, aes(x=daysnum, y = DailyPercent)) + geom_col() +
-  ggtitle("Alpha Cases, as Proportion of Cases Per Day") +
-  xlab("Collection Day") + ylab("Daily Proportion") + theme_bw() + #scale_x_date(date_labels="%b %d %Y", date_breaks = "1 week") +
-   geom_segment(data = alpha_processed_5days, aes(x = StartDayNum, y = y1, xend = EndDayNum, yend = y2), colour="red") +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
-      panel.border = element_rect(colour = "black", fill=NA, size=1),
-      #axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
-      axis.text.y = element_text(hjust = 1, size = 8))
-alpha1
-pdf("finalized_alpha_5daywindow_dailycases_withsegments_proportions_v2.pdf", width = 6, height = 4)
-alpha1
-dev.off()
-
-##zoomed vers for better view of earlier days
-cutdata_alpha_forzoomplot<-cutdata_alpha[cutdata_alpha$daysnum >= 0 & cutdata_alpha$daysnum <= 50,]
-alpha_processed_5days_forzoomplot<-alpha_processed_5days[alpha_processed_5days$StartDate %in% cutdata_alpha_forzoomplot$day ,]
-
-alpha1zoomNOLINE<-ggplot(cutdata_alpha_forzoomplot, aes(x=day, y = DailyPercent)) + geom_col() +
-  ggtitle("Alpha Cases, as Proportion of Cases Per Day") +  ylim(0,1) +
-  xlab("Collection Day") + ylab("Daily Proportion of Cases") + theme_bw() +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust=0.5), #legend.title = element_blank(),
-      panel.border = element_rect(colour = "black", fill=NA, size=1),    #axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
-      axis.text.y = element_text(hjust = 1, size = 8))
-alpha1zoomNOLINE
-
-#version with line showing the models
-alpha1zoom<-ggplot(cutdata_alpha_forzoomplot, aes(x=daysnum, y = DailyPercent)) + geom_col() +
-  ggtitle("Alpha Cases, as Proportion of Cases Per Day") + ylim(0,1) + 
-  xlab("Collection Day") + ylab("Daily Proportion of Cases") + theme_bw() +
-   geom_segment(data = alpha_processed_5days_forzoomplot, aes(x = StartDayNum, y = y1, xend = EndDayNum, yend = y2), colour="red") +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust=0.5),
-      panel.border = element_rect(colour = "black", fill=NA, size=1),
-      axis.text.y = element_text(hjust = 1, size = 8))
-alpha1zoom
-
-pdf("finalized_alpha_zoomed_sliding_window_5daywindow_imputed.pdf", width = 6, height = 4)
-alpha1zoomNOLINE
-alpha1zoom
-dev.off()
-
-#mini vers that only goes to when the variant is over 50% for 5 days.
+#vers that only goes to when the variant is over 50% for 5 days.
 #so for alpha it is going until March 6-March 10 2021
 cutdata_alpha_forzoomplot50<-cutdata_alpha[cutdata_alpha$day <= "2021-03-10",]
 alpha_processed_5days_forzoomplot<-alpha_processed_5days[alpha_processed_5days$StartDate %in% cutdata_alpha_forzoomplot50$day ,]
@@ -272,42 +226,6 @@ delta_processed_5days$EndDayNum<-as.numeric(delta_processed_5days$EndDayNum)
 #write.xlsx(delta_processed_5days, "finalized_delta_processed_imputed_5days.xlsx")
 delta_processed_5days<-read.xlsx("finalized_delta_processed_imputed_5days.xlsx")
 
-#graph showing results of linear models
-delta1<-ggplot(cutdata_delta, aes(x=daysnum, y = DailyPercent)) + geom_col() +
-  ggtitle("Delta Cases, as Proportion of Cases Per Day") +  xlab("Collection Day") + ylab("Daily Proportion") + theme_bw() +
-   geom_segment(data = delta_processed_5days, aes(x = StartDayNum, y = y1, xend = EndDayNum, yend = y2), colour="red") +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),   plot.title = element_text(hjust=0.5), 
-      panel.border = element_rect(colour = "black", fill=NA, size=1),  axis.text.y = element_text(hjust = 1, size = 8))
-delta1
-pdf("finalized_delta_5daywindow_dailycases_withsegments_proportions_v2.pdf", width = 7, height = 4)
-delta1
-dev.off()
-
-##zoomed vers to get better view of earlier days 
-cutdata_delta_forzoomplot<-cutdata_delta[cutdata_delta$daysnum >= 0 & cutdata_delta$daysnum <= 50,]
-delta_processed_5days_forzoomplot<-delta_processed_5days[delta_processed_5days$StartDate %in% cutdata_delta_forzoomplot$day ,]
-
-delta1zoomNOLINE<-ggplot(cutdata_delta_forzoomplot, aes(x=day, y = DailyPercent)) + geom_col() +
-  ggtitle("Delta Cases, as Proportion of Cases Per Day") +  ylim(0,1) +  xlab("Collection Day") + ylab("Daily Proportion of Cases") + theme_bw() + 
-   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(), plot.title = element_text(hjust=0.5), 
-      panel.border = element_rect(colour = "black", fill=NA, size=1), axis.text.y = element_text(hjust = 1, size = 8))
-delta1zoomNOLINE
-
-delta1zoom<-ggplot(cutdata_delta_forzoomplot, aes(x=daysnum, y = DailyPercent)) + geom_col() +
-  ggtitle("Delta Cases, as Proportion of Cases Per Day") + ylim(0,1) +  xlab("Collection Day") + ylab("Daily Proportion of Cases") + theme_bw() +
-   geom_segment(data = delta_processed_5days_forzoomplot, aes(x = StartDayNum, y = y1, xend = EndDayNum, yend = y2), colour="red") +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),   plot.title = element_text(hjust=0.5), 
-      panel.border = element_rect(colour = "black", fill=NA, size=1),   axis.text.y = element_text(hjust = 1, size = 8))
-delta1zoom
-
-pdf("finalized_delta_zoomed_sliding_window_5daywindow_imputed.pdf", width = 6, height = 4)
-delta1zoomNOLINE
-delta1zoom
-dev.off()
-
 
 #mini vers. that only goes to when the variant is over 50% for 5 days. so for delta it is going until June 16 to June 20 2021
 cutdata_delta_forzoomplot50<-cutdata_delta[cutdata_delta$day <= "2021-06-20",]
@@ -396,43 +314,6 @@ omicron_processed_5days$EndDayNum<-as.numeric(omicron_processed_5days$EndDayNum)
 ##save file
 write.xlsx(omicron_processed_5days, "finalized_omicron_processed_imputed_5days.xlsx")
 
-omicron1<-ggplot(cutdata_omicron, aes(x=daysnum, y = DailyPercent)) + geom_col() +  ggtitle("Omicron") +
-  xlab("Collection Day") + ylab("Daily Proportion") + theme_bw() + 
-   geom_segment(data = omicron_processed_5days, aes(x = StartDayNum, y = y1, xend = EndDayNum, yend = y2), colour="red") +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  plot.title = element_text(hjust=0.5),
-      panel.border = element_rect(colour = "black", fill=NA, size=1),
-      axis.text.y = element_text(hjust = 1, size = 8))
-omicron1
-pdf("finalized_omicron_5daywindow_dailycases_withsegments_proportions_v2.pdf", width = 2, height = 4)
-omicron1
-dev.off()
-
-##zoomed vers for better view of first few days - actually the same for omicron as it is a short time period before testing was cut 
-cutdata_omicron_forzoomplot<-cutdata_omicron[cutdata_omicron$daysnum >= 0 & cutdata_omicron$daysnum <= 50,]
-omicron_processed_5days_forzoomplot<-omicron_processed_5days[omicron_processed_5days$StartDate %in% cutdata_omicron_forzoomplot$day ,]
-
-omicron1zoomNOLINE<-ggplot(cutdata_omicron_forzoomplot, aes(x=day, y = DailyPercent)) + geom_col() +
-  ggtitle("Omicron Cases, as Proportion of Cases Per Day") +  ylim(0,1) +  xlab("Collection Day") + ylab("Daily Proportion of Cases") + theme_bw() +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  plot.title = element_text(hjust=0.5),
-      panel.border = element_rect(colour = "black", fill=NA, size=1), axis.text.y = element_text(hjust = 1, size = 8))
-omicron1zoomNOLINE
-
-omicron1zoom<-ggplot(cutdata_omicron_forzoomplot, aes(x=daysnum, y = DailyPercent)) + geom_col() +
-  ggtitle("Omicron Cases, as Proportion of Cases Per Day") + ylim(0,1) + xlab("Collection Day") + ylab("Daily Proportion of Cases") + theme_bw() + 
-   geom_segment(data = omicron_processed_5days_forzoomplot, aes(x = StartDayNum, y = y1, xend = EndDayNum, yend = y2), colour="red") +
-    theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),
-      panel.grid.major = element_blank(), panel.grid.minor = element_blank(), plot.title = element_text(hjust=0.5), 
-      panel.border = element_rect(colour = "black", fill=NA, size=1), axis.text.y = element_text(hjust = 1, size = 8))
-omicron1zoom
-
-pdf("finalized_omicron_zoomed_sliding_window_5daywindow_imputed.pdf", width = 6, height = 4)
-omicron1zoomNOLINE
-omicron1zoom
-dev.off()
-
-
 #new mini vers that only goes to when the variant is over 50% for 5 days; so for omicron it is going until Dec 14-18 2021
 cutdata_omicron_forzoomplot50<-cutdata_omicron[cutdata_omicron$day <= "2021-12-18",]
 omicron_processed_5days_forzoomplot<-omicron_processed_5days[omicron_processed_5days$StartDate %in% cutdata_omicron_forzoomplot50$day ,]
@@ -468,7 +349,6 @@ dev.off()
 omicron_processed_5days$fillcol<-"positive"
 omicron_processed_5days[omicron_processed_5days$lmSlope<0,]$fillcol<-"negative"
 slopescols<-c("positive" = "red", negative = "blue")
-
 
 omicronchunkslopesDates<-ggplot(omicron_processed_5days, aes(x=as.Date(StartDate), y=as.numeric(lmSlope), fill = fillcol ) ) + geom_col() + scale_fill_manual(values = slopescols) +
   ggtitle("Omicron") + xlab("Start Day") + ylab("Slope of Window") + theme_bw() + scale_x_date(date_labels="%b %d %Y", date_breaks = "1 week") + scale_y_continuous(limits = c(-0.15,0.15)) +
