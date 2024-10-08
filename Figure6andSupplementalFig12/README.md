@@ -19,3 +19,6 @@ Sup. Fig. 12 C shows the same analysis as in B, but for the S-Pbs data.
 Sup. Fig. 12 D shows the finalized count of S-Pbs pQS.
 
 Sup Fig 12 E shows the aligned S-Pbs pQS per VOC.
+
+
+The script ExampleSubsetProcessing.R shows an example of how we compiled the Delta subset quasispecies runs at different percentage cutoffs to determine a finalized cutoff. 
