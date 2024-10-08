@@ -1,8 +1,10 @@
 R scripts for Figure 6 and examples of Supplemental Figure 12 analysis:
 
+After developing our quasispecies analysis pipeline available at https://github.com/wrana-lab/SPARSEQ_QUASISPECIES we needed to develop reasomable filtering methods to determine putative quasispecies sequences (pQS) vs. background noise sequences. This folder includes an example of the processing method using the Delta samples. The same method was followed for all subsets of samples.
+
 Figure 6 A shows the flowchart of our analysis process.
 
-Figure 6 B shows the finalized count of S-Rbm putative quasispecies (pQS).
+Figure 6 B shows the finalized count of S-Rbm pQS.
 
 Figure 6 C shows the finalized aligned S-Rbm pQS per VOC.
 
