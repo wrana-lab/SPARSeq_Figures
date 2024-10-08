@@ -1,5 +1,5 @@
 ##This script uses our Delta data as an example to show how we process the final version of our quasispecies pipeline,
-#using the x-intercepts we calculated from the previous script, to get a final list of pQS to move forward with analysis on.
+#using the x-intercepts we calculated from the previous script (ExampleSubsetProcessing.R), to get a final list of pQS to move forward with analysis on.
 
 
 
