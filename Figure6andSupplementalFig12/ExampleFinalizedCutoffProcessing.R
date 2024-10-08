@@ -20,8 +20,8 @@ library(Biostrings)
 #translate(x, genetic.code=GENETIC_CODE, if.fuzzy.codon="error")
 
 #import aligned lists from the final, x-intercept based analysis runs of the quasispecies pipeline: Cutoff of copy 1: 0.2511, Cutoff of copy 2: 0.2027
-bc1_aligned_list<-read.csv("bc1_2022/srbd_aligned_list.txt")
-bc2_aligned_list<-read.csv("bc2_2023/srbd_aligned_list.txt")
+bc1_aligned_list<-read.csv("srbd_aligned_list_bc1_delta_finalcutoff.txt")
+bc2_aligned_list<-read.csv("srbd_aligned_list_bc2_delta_finalcutoff.txt")
 
 #drop refseq from first row 
 bc1_aligned_list<-bc1_aligned_list[2:nrow(bc1_aligned_list),]
@@ -46,8 +46,8 @@ bc1_aligned_list<-bc1_aligned_list[,3:4]
 bc2_aligned_list<-bc2_aligned_list[,3:4]
 
 #check count output list - this is the output from the quasispecies pipeline that just contains total Srbm counts per sample
-bc1countlist<-read.csv("bc1_2022/countoutputlist.csv")
-bc2countlist<-read.csv("bc2_2023/countoutputlist.csv")
+bc1countlist<-read.csv("countoutputlist_delta_bc1_finalcutoff.csv")
+bc2countlist<-read.csv("countoutputlist_delta_bc2_finalcutoff.csv")
 
 bc1countlist<-bc1countlist[bc1countlist$total_SRBD_count > 32000,]
 bc2countlist<-bc2countlist[bc2countlist$total_SRBD_count > 32000,]
