@@ -8,7 +8,8 @@ library(reshape2)
 library(gridExtra)
 
 ##the sparseq quasispecies pipeline needs to be run with the percent cutoff setting changed for each of these outputs. 
-#import each output with modified names 
+#import each output with modified names-
+#this is just the srbd_aligned_list.txt output from the quasispecies pipeline.
 bc1_001<-read.csv("srbd_aligned_list_bc1_0.01.txt")
 head(bc1_001)
 bc2_001<-read.csv("srbd_aligned_list_bc2_0.01.txt")
