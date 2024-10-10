@@ -1,5 +1,6 @@
 # SPARSeq_Figures
 Code for figures for the Covid-19 SPARseq paper, 2024. 
+By Lauren Caldwell
 
 The analysis can be replicated starting from the main aggregated table of results, filtered_data_for_paper_v25.xlsx, available in this folder. Some subfolders also include other inputs or intermediate files. 
 
