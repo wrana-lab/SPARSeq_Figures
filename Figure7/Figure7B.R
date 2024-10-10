@@ -225,13 +225,6 @@ table(spbsfinal$serahighlight)#17 yes 53 no
 table(spbsfinal$spikehighlight) #13 yes 57 no
 table(spbsfinal$ACE2.binding_highlight) #22 yes 48 no 
 
-#use common min and max from srbd and spbs to design the scales so they are on the same scale system and we can use the same legends in the fig.
-max(na.omit(srbdfinal$human.sera.escape)); min(na.omit(srbdfinal$human.sera.escape));
-#0.3323, -1.25
-max(na.omit(srbdfinal$spike.mediated.entry)); min(na.omit(srbdfinal$spike.mediated.entry));
-#0.1395, -3.101
-max(na.omit(srbdfinal$ACE2.binding)); min(na.omit(srbdfinal$ACE2.binding));
-#0.9326, -1.881
 
 ###design heatmaps
 #use common min and max from srbd and spbs to design the scales so they are on the same scale system and we can use the same legends in the fig.
@@ -250,9 +243,10 @@ min(c(na.omit(srbdfinal$ACE2.binding), na.omit(spbsfinal$ACE2.binding)))
 
 
 #srbm
+range(c(na.omit(srbdfinal$human.sera.escape), na.omit(spbsfinal$human.sera.escape)))
 bloom_srbm_human.sera.escape<-ggplot(srbdfinal, aes(x=site, y=mutant, fill = human.sera.escape, colour = serahighlight)) + 
     geom_tile(aes(colour = serahighlight),size=0.5 ) + scale_colour_manual(values = highlightcols1) + ggtitle("human sera escape scores on our subvariant + QS sites") + 
-  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=range(c(na.omit(srbdfinal$human.sera.escape), na.omit(spbsfinal$human.sera.escape))), na.value = "darkgray") +
+  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=c(-1.5, 0.5), na.value = "darkgray") +
   xlab("S-RBM Position") + ylab("Mutant AA") + theme_bw() + scale_x_continuous(limits = c(471,505), breaks = c(seq(472,504,1))) + 
   geom_tile(data = srbdfinal[srbdfinal$serahighlight == "keyposition",], aes(colour = serahighlight),size=0.5 ) +
   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(), legend.direction = "vertical",
@@ -262,9 +256,10 @@ bloom_srbm_human.sera.escape<-ggplot(srbdfinal, aes(x=site, y=mutant, fill = hum
       axis.text.y = element_text(hjust = 1, size = 12))
 bloom_srbm_human.sera.escape
 
+range(c(na.omit(srbdfinal$spike.mediated.entry), na.omit(spbsfinal$spike.mediated.entry)))
 bloom_srbm_spike.mediated.entry<-ggplot(srbdfinal, aes(x=site, y=mutant, fill = spike.mediated.entry, colour = spikehighlight)) + 
     geom_tile(aes(colour = spikehighlight),size=0.5 ) + scale_colour_manual(values = highlightcols1) + ggtitle("spike-mediated entry scores on our subvariant + QS sites") + 
-  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=range(c(na.omit(srbdfinal$spike.mediated.entry), na.omit(spbsfinal$spike.mediated.entry))), na.value = "darkgray") +
+  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=c(-3.2,0.2), na.value = "darkgray") +
   xlab("S-RBM Position") + ylab("Mutant AA") + theme_bw() + scale_x_continuous(limits = c(471,505), breaks = c(seq(472,504,1))) +
   geom_tile(data = srbdfinal[srbdfinal$spikehighlight == "keyposition",], aes(colour = spikehighlight),size=0.5 ) +
   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),legend.direction = "vertical",
@@ -274,9 +269,10 @@ bloom_srbm_spike.mediated.entry<-ggplot(srbdfinal, aes(x=site, y=mutant, fill = 
       axis.text.y = element_text(hjust = 1, size = 12))
 bloom_srbm_spike.mediated.entry
 
+range(c(na.omit(srbdfinal$ACE2.binding), na.omit(spbsfinal$ACE2.binding)))
 bloom_srbm_ACE2.binding<-ggplot(srbdfinal, aes(x=site, y=mutant, fill = ACE2.binding, colour = ACE2.binding_highlight)) + 
     geom_tile(aes(colour = ACE2.binding_highlight),size=0.5 ) + scale_colour_manual(values = highlightcols1) + ggtitle("ACE2 binding scores on our subvariant + QS sites") +
-  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=range(c(na.omit(srbdfinal$ACE2.binding), na.omit(spbsfinal$ACE2.binding))), na.value = "darkgray") +
+  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=c(-2,1), na.value = "darkgray", breaks =c(-2, -1.5, -1, -0.5, 0, 0.5, 1)) +
   xlab("S-RBM Position") + ylab("Mutant AA") + theme_bw() + scale_x_continuous(limits = c(471,505), breaks = c(seq(472,504,1))) + 
   geom_tile(data = srbdfinal[srbdfinal$ACE2.binding_highlight == "keyposition",], aes(colour = ACE2.binding_highlight),size=0.5 ) +
   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),legend.direction = "vertical",
@@ -296,7 +292,7 @@ dev.off()
 bloom_spbs_human.sera.escape<-ggplot(spbsfinal, aes(x=site, y=mutant, fill = human.sera.escape, colour = serahighlight)) + 
     geom_tile(aes(colour = serahighlight),size=0.5 ) + scale_color_manual(values=highlightcols1) + ggtitle("human sera escape scores on our subvariant + QS sites") +
   #intentionally using srbm range for scale
-  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=range(c(na.omit(srbdfinal$human.sera.escape), na.omit(spbsfinal$human.sera.escape))), na.value = "darkgray") +
+  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0,  limits=c(-1.5, 0.5), na.value = "darkgray") +
   xlab("S-PBS Position") + ylab("Mutant AA") + theme_bw() + scale_x_continuous(limits = c(678,699), breaks = c(seq(679,698,1))) + 
   geom_tile(data = spbsfinal[spbsfinal$serahighlight == "keyposition",], aes(colour = serahighlight),size=0.5 ) +
   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(), legend.direction = "vertical",
@@ -308,7 +304,7 @@ bloom_spbs_human.sera.escape
 bloom_spbs_spike.mediated.entry<-ggplot(spbsfinal, aes(x=site, y=mutant, fill = spike.mediated.entry, colour = spikehighlight)) +
     geom_tile(aes(colour = spikehighlight),size=0.5 ) + scale_color_manual(values=highlightcols1) + ggtitle("spike-mediated entry scores on our subvariant + QS sites") +
   #intentionally using srbm range for scale
-  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=range(c(na.omit(srbdfinal$spike.mediated.entry), na.omit(spbsfinal$spike.mediated.entry))), na.value = "darkgray") +
+  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=c(-3.2,0.2), na.value = "darkgray") +
   xlab("S-PBS Position") + ylab("Mutant AA") + theme_bw() + scale_x_continuous(limits = c(678,699), breaks = c(seq(679,698,1))) + 
   geom_tile(data = spbsfinal[spbsfinal$spikehighlight == "keyposition",], aes(colour = spikehighlight),size=0.5 ) +
   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),legend.direction = "vertical",
@@ -317,10 +313,11 @@ bloom_spbs_spike.mediated.entry<-ggplot(spbsfinal, aes(x=site, y=mutant, fill = 
       axis.text.y = element_text(hjust = 1, size = 12))
 bloom_spbs_spike.mediated.entry
 
+range(c(na.omit(srbdfinal$ACE2.binding), na.omit(spbsfinal$ACE2.binding)))
 bloom_spbs_ACE2.binding<-ggplot(spbsfinal, aes(x=site, y=mutant, fill = ACE2.binding, colour = ACE2.binding_highlight)) +
     geom_tile(aes(colour = ACE2.binding_highlight),size=0.5 ) + scale_color_manual(values=highlightcols1) + ggtitle("ACE2 binding scores on our subvariant + QS sites") + 
   #intentionally using srbm range for scale
-  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=range(c(na.omit(srbdfinal$ACE2.binding), na.omit(spbsfinal$ACE2.binding))), na.value = "darkgray") +
+  scale_fill_gradient2(low="blue", mid="white", high="darkred",  midpoint=0, limits=c(-2,1), na.value = "darkgray", breaks =c(-2, -1.5, -1, -0.5, 0, 0.5, 1)) +
   xlab("S-PBS Position") + ylab("Mutant AA") + theme_bw() + scale_x_continuous(limits = c(678,699), breaks = c(seq(679,698,1))) + 
   geom_tile(data = spbsfinal[spbsfinal$ACE2.binding_highlight == "keyposition",], aes(colour = ACE2.binding_highlight),size=0.5 ) +
   theme(axis.title = element_text(size=16), legend.position = c("bottom"), plot.background = element_blank(),legend.direction = "vertical",
