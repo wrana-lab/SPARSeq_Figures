@@ -1102,3 +1102,299 @@ dev.off()
 
 
 ####end bubbles of ABs for sup fig 14####
+
+
+###we also generate some processed tables for Figure 7 here#####
+alldata<-read.xlsx("overall_srbd_table.xlsx")
+head(alldata)
+
+#need to run this to get processed base file for fig 7heatmap 
+common_dnastring<-DNAStringSet(alldata$seq_chars)
+common_aas<-as.data.frame(translate(common_dnastring))
+alldata<-cbind(alldata, common_aas)
+colnames(alldata)<-c("run", "variant",  "sampleID", "seq_chars",  "AAstring")
+
+##for loop of all pos
+alldata$run_variant<-paste(alldata$run, alldata$variant, sep = "_")
+
+#sequence number is added to differentiate between sample A seq 1 and sample A seq 2 within run_variant
+#new frame would be run_variant, sampleID, pos, and then base
+split_pos <- function(x){
+  outputdf <- data.frame(run_variant=character(),  sampleID=character(), sequencenumber=character(),
+                 position=character(),  base=character(), stringsAsFactors=FALSE)
+  colnames(outputdf)<-c("run_variant", "sampleID", "sequencenumber", "position", "base")
+  for(i in 1:nrow(x)){ #for each row of table
+    print(i)
+    sampleID<-x[i,"sampleID" ]
+    run_variant<-x[i,"run_variant" ]
+    sequence<-x[i,"seq_chars" ]
+    #
+    for(j in 1:nchar(sequence)){
+      base<-substring(sequence, j, j)
+      outputdf[nrow(outputdf)+1,]<-c(run_variant, sampleID, i, j, base)
+
+    }
+  }
+  return(outputdf)
+} #this takes a bit of time to run 
+
+alldataprocessed<-split_pos(alldata)
+alldataprocessed$position<-as.numeric(alldataprocessed$position)
+
+###split into the 5 runs
+run27wt<-subset(alldataprocessed, alldataprocessed$run_variant == "27_WT")
+run31wt<-subset(alldataprocessed, alldataprocessed$run_variant == "31_WT")
+run31alpha<-subset(alldataprocessed, alldataprocessed$run_variant == "31_Alpha")
+runDelta<-subset(alldataprocessed, alldataprocessed$run_variant == "139-141_Delta")
+runOmicron<-subset(alldataprocessed, alldataprocessed$run_variant == "139-141_Omicron")
+
+#merge each with appropriate control
+run27wt<-merge(run27wt, srbdwtsplit, by = "position", all = T)
+run31wt<-merge(run31wt, srbdwtsplit, by = "position", all = T)
+run31alpha<-merge(run31alpha, srbdalphasplit, by = "position", all = T)
+runDelta<-merge(runDelta, srbddeltasplit, by = "position", all = T)
+runOmicron<-merge(runOmicron, srbdomicronsplit, by = "position", all = T)
+
+###re merge
+all_data_with_refs<-rbind(run27wt, run31wt, run31alpha,  runDelta, runOmicron)
+
+##match each base as change or no change
+all_data_with_refs$change<-"no"
+all_data_with_refs[all_data_with_refs$base != all_data_with_refs$refseq, ]$change<-"yes"
+
+all_data_with_refs$newbase<-"no change"
+all_data_with_refs[all_data_with_refs$change == "yes", ]$newbase<-all_data_with_refs[all_data_with_refs$change == "yes", ]$base
+
+all_data_with_refs$newbase<-factor(all_data_with_refs$newbase, levels = c("no change", "A", "C", "G", "T"))
+
+all_data_with_refs$position<-as.numeric(all_data_with_refs$position)
+all_data_with_refs$run_variant<-factor(all_data_with_refs$run_variant, levels = c("27_WT", "31_WT", "31_Alpha", "139-141_Delta", "139-141_Omicron"))
+
+all_data_with_refs$variant<-"WT"
+all_data_with_refs[all_data_with_refs$run_variant == "31_Alpha",]$variant<-"Alpha"
+all_data_with_refs[all_data_with_refs$run_variant == "139-141_Delta",]$variant<-"Delta"
+all_data_with_refs[all_data_with_refs$run_variant == "139-141_Omicron",]$variant<-"Omicron"
+all_data_with_refs$variant<-factor(all_data_with_refs$variant, levels=c("WT", "Alpha", "Delta", "Omicron"))
+
+###fix numbers
+all_data_with_refs$position<-all_data_with_refs$position+1413
+write.xlsx(all_data_with_refs, file = "processed_srbd_ntd_overall_table_forFig7.xlsx")
+
+####repeat for AAs######
+
+alldataAA<-alldata[,c("sampleID", "AAstring", "run_variant")]
+colnames(alldataAA)<-c("sampleID","seq_chars", "run_variant")
+
+alldataprocessedAA<-split_pos(alldataAA)
+alldataprocessedAA$position<-as.numeric(alldataprocessedAA$position)
+
+###split into the 5 runs
+run27wtAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "27_WT")
+run31wtAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "31_WT")
+run31alphaAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "31_Alpha")
+runDeltaAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "139-141_Delta")
+runOmicronAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "139-141_Omicron")
+
+#merge each with appropriate control
+run27wtAA<-merge(run27wtAA, srbdwtaa_split, by = "position", all = T)
+run31wtAA<-merge(run31wtAA, srbdwtaa_split, by = "position", all = T)
+run31alphaAA<-merge(run31alphaAA, srbdalphaaa_split, by = "position", all = T)
+runDeltaAA<-merge(runDeltaAA, srbddeltaaa_split, by = "position", all = T)
+runOmicronAA<-merge(runOmicronAA, srbdomicronaa_split, by = "position", all = T)
+
+###re merge
+allAA_data_with_refs<-rbind(run27wtAA, run31wtAA, run31alphaAA,  runDeltaAA, runOmicronAA)
+##match each base as change or no change
+allAA_data_with_refs$change<-"no"
+allAA_data_with_refs[allAA_data_with_refs$base != allAA_data_with_refs$refseq_AA, ]$change<-"yes"
+
+allAA_data_with_refs$newbase<-"no change"
+allAA_data_with_refs[allAA_data_with_refs$change == "yes", ]$newbase<-allAA_data_with_refs[allAA_data_with_refs$change == "yes", ]$base
+
+allAA_data_with_refs$newbase<-factor(allAA_data_with_refs$change, levels = c("no change", "change"))
+
+allAA_data_with_refs$position<-as.numeric(allAA_data_with_refs$position)
+allAA_data_with_refs$run_variant<-factor(allAA_data_with_refs$run_variant, levels = c("27_WT", "31_WT", "31_Alpha", "139-141_Delta", "139-141_Omicron"))
+
+allAA_data_with_refs$variant<-"WT"
+allAA_data_with_refs[allAA_data_with_refs$run_variant == "31_Alpha",]$variant<-"Alpha"
+allAA_data_with_refs[allAA_data_with_refs$run_variant == "139-141_Delta",]$variant<-"Delta"
+allAA_data_with_refs[allAA_data_with_refs$run_variant == "139-141_Omicron",]$variant<-"Omicron"
+allAA_data_with_refs$variant<-factor(allAA_data_with_refs$variant, levels=c("WT", "Alpha", "Delta", "Omicron"))
+
+write.xlsx(allAA_data_with_refs, "processed_srbd_AA_overall_table_ForFig7.xlsx")
+
+
+####repeat for spbs#####
+
+spbs_omicron<-"AAGTCTCATCGGCGGGCACGTAGTGTAGCTAGTCAATCCATCATTGCCTACACTATGTCACT"#GGTC"
+spbs_omicron_AA<-"KSHRRARSVASQSIIAYTMS"#G"
+spbs_delta<-"AATTCTCGTCGGCGGGCACGTAGTGTAGCTAGTCAATCCATCATTGCCTACACTATGTCACT"#GGTT"
+spbs_delta_AA<-"NSRRRARSVASQSIIAYTMS"#G"
+spbs_wt<-"AATTCTCCTCGGCGGGCACGTAGTGTAGCTAGTCAATCCATCATTGCCTACACTATGTCACT"#GGTT"
+spbs_wt_AA<-"NSPRRARSVASQSIIAYTMS"#G"
+spbs_alpha<-"AATTCTCATCGGCGGGCACGTAGTGTAGCTAGTCAATCCATCATTGCCTACACTATGTCACT"#GGTT"
+spbs_alpha_AA<-"NSHRRARSVASQSIIAYTMS"#G"
+
+#wt seq dataframe
+splitpos_control<-function(x){
+  outputdf <- data.frame(position=character(), base=character(), stringsAsFactors=FALSE) 
+  colnames(outputdf)<-c("position", "base")
+  for(j in 1:nchar(x)){
+    base<-substring(x, j, j)
+    outputdf[nrow(outputdf)+1,]<-c( j, base)
+  }
+  return(outputdf)
+}
+
+spbswt_split<-splitpos_control(spbs_wt)
+spbswtaa_split<-splitpos_control(spbs_wt_AA)
+
+spbsalpha_split<-splitpos_control(spbs_alpha)
+spbsalphaaa_split<-splitpos_control(spbs_alpha_AA)
+
+spbsdelta_split<-splitpos_control(spbs_delta)
+spbsdeltaaa_split<-splitpos_control(spbs_delta_AA)
+
+spbsomicron_split<-splitpos_control(spbs_omicron)
+spbsomicronaa_split<-splitpos_control(spbs_omicron_AA)
+
+colnames(spbswt_split)<-c("position", "refseq_base")
+colnames(spbsalpha_split)<-c("position", "refseq_base")
+colnames(spbsdelta_split)<-c("position", "refseq_base")
+colnames(spbsomicron_split)<-c("position", "refseq_base")
+
+colnames(spbswtaa_split)<-c("position", "refseq_AA")
+colnames(spbsalphaaa_split)<-c("position", "refseq_AA")
+colnames(spbsdeltaaa_split)<-c("position", "refseq_AA")
+colnames(spbsomicronaa_split)<-c("position", "refseq_AA")
+
+
+##import our data from spbs analysis
+alldata<-read.xlsx("overall_spbs_table.xlsx")
+head(alldata)
+
+common_dnastring<-DNAStringSet(alldata$seq_chars)
+common_aas<-as.data.frame(translate(common_dnastring))
+alldata<-cbind(alldata, common_aas)
+colnames(alldata)<-c("run", "variant",  "sampleID", "seq_chars",  "AAstring")
+
+##for loop of all pos
+alldata$run_variant<-paste(alldata$run, alldata$variant, sep = "_")
+
+#sequence number is added to differentiate between sample A seq 1 and sample A seq 2 within run_variant 
+#new frame would be run_variant, sampleID, pos, and then base
+split_pos <- function(x){
+  outputdf <- data.frame(run_variant=character(),  sampleID=character(), sequencenumber=character(),
+                 position=character(),  base=character(), stringsAsFactors=FALSE) 
+  colnames(outputdf)<-c("run_variant", "sampleID", "sequencenumber", "position", "base")
+  for(i in 1:nrow(x)){ #for each row of table
+    print(i)
+    sampleID<-x[i,"sampleID" ]
+    run_variant<-x[i,"run_variant" ]
+    sequence<-x[i,"seq_chars" ]
+    #
+    for(j in 1:nchar(sequence)){
+      base<-substring(sequence, j, j)
+      outputdf[nrow(outputdf)+1,]<-c(run_variant, sampleID, i, j, base)
+      
+    }
+  }
+  return(outputdf)
+}
+
+alldataprocessed<-split_pos(alldata)
+head(alldataprocessed)
+table(alldataprocessed$run_variant)
+alldataprocessed$position<-as.numeric(alldataprocessed$position)
+
+
+###split into the 5 runs
+#run27wt<-subset(alldataprocessed, alldataprocessed$run_variant == "27_WT")
+run31wt<-subset(alldataprocessed, alldataprocessed$run_variant == "31_WT")
+run31alpha<-subset(alldataprocessed, alldataprocessed$run_variant == "31_Alpha")
+runDelta<-subset(alldataprocessed, alldataprocessed$run_variant == "139-141_Delta")
+runOmicron<-subset(alldataprocessed, alldataprocessed$run_variant == "139-141_Omicron")
+
+#merge each with appropriate control
+#run27wt<-merge(run27wt, spbswt_split, by = "position", all = T)
+run31wt<-merge(run31wt, spbswt_split, by = "position", all = T)
+run31alpha<-merge(run31alpha, spbsalpha_split, by = "position", all = T)
+runDelta<-merge(runDelta, spbsdelta_split, by = "position", all = T)
+runOmicron<-merge(runOmicron, spbsomicron_split, by = "position", all = T)
+
+###re merge
+all_data_with_refs<-rbind( run31wt, run31alpha,  runDelta, runOmicron)#run27wt
+head(all_data_with_refs)
+
+##match each base as change or no change 
+all_data_with_refs$change<-"no"
+all_data_with_refs[all_data_with_refs$base != all_data_with_refs$refseq_base, ]$change<-"yes"
+
+all_data_with_refs$newbase<-"no change"
+all_data_with_refs[all_data_with_refs$change == "yes", ]$newbase<-all_data_with_refs[all_data_with_refs$change == "yes", ]$base
+
+all_data_with_refs$newbase<-factor(all_data_with_refs$newbase, levels = c("no change", "A", "C", "G", "T"))
+
+all_data_with_refs$position<-as.numeric(all_data_with_refs$position)
+all_data_with_refs$run_variant<-factor(all_data_with_refs$run_variant, levels = c("27_WT", "31_WT", "31_Alpha", "139-141_Delta", "139-141_Omicron"))
+
+all_data_with_refs$variant<-"WT"
+all_data_with_refs[all_data_with_refs$run_variant == "31_Alpha",]$variant<-"Alpha"
+all_data_with_refs[all_data_with_refs$run_variant == "139-141_Delta",]$variant<-"Delta"
+all_data_with_refs[all_data_with_refs$run_variant == "139-141_Omicron",]$variant<-"Omicron"
+all_data_with_refs$variant<-factor(all_data_with_refs$variant, levels=c("WT", "Alpha", "Delta", "Omicron"))
+all_data_with_refs
+
+write.xlsx(all_data_with_refs, file= 'processed_spbs_ntd_overall_table_ForFig7.xlsx')
+
+####repeat for AAs######
+alldataAA<-alldata[,c("sampleID", "AAstring", "run_variant")]
+colnames(alldataAA)<-c("sampleID","seq_chars", "run_variant")
+
+alldataprocessedAA<-split_pos(alldataAA)
+table(alldataprocessedAA$run_variant)
+alldataprocessedAA$position<-as.numeric(alldataprocessedAA$position)
+
+
+###split into the 5 runs
+#run27wtAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "27_WT")
+run31wtAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "31_WT")
+run31alphaAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "31_Alpha")
+runDeltaAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "139-141_Delta")
+runOmicronAA<-subset(alldataprocessedAA, alldataprocessedAA$run_variant == "139-141_Omicron")
+
+#merge each with appropriate control
+#run27wtAA<-merge(run27wtAA, spbswtaa_split, by = "position", all = T)
+run31wtAA<-merge(run31wtAA, spbswtaa_split, by = "position", all = T)
+run31alphaAA<-merge(run31alphaAA, spbswtaa_split, by = "position", all = T)
+runDeltaAA<-merge(runDeltaAA, spbsdeltaaa_split, by = "position", all = T)
+runOmicronAA<-merge(runOmicronAA, spbsomicronaa_split, by = "position", all = T)
+
+
+###re merge
+allAA_data_with_refs<-rbind( run31wtAA, run31alphaAA,  runDeltaAA, runOmicronAA) #
+head(allAA_data_with_refs)
+
+##match each base as change or no change 
+allAA_data_with_refs$change<-"no"
+allAA_data_with_refs[allAA_data_with_refs$base != allAA_data_with_refs$refseq_AA, ]$change<-"yes"
+
+allAA_data_with_refs$newbase<-"no change"
+allAA_data_with_refs[allAA_data_with_refs$change == "yes", ]$newbase<-allAA_data_with_refs[allAA_data_with_refs$change == "yes", ]$base
+
+allAA_data_with_refs$newbase<-factor(allAA_data_with_refs$change, levels = c("no change", "change"))
+
+allAA_data_with_refs$position<-as.numeric(allAA_data_with_refs$position)
+allAA_data_with_refs$run_variant<-factor(allAA_data_with_refs$run_variant, levels = c("27_WT", "31_WT", "31_Alpha", "139-141_Delta", "139-141_Omicron"))
+
+allAA_data_with_refs$variant<-"WT"
+allAA_data_with_refs[allAA_data_with_refs$run_variant == "31_Alpha",]$variant<-"Alpha"
+allAA_data_with_refs[allAA_data_with_refs$run_variant == "139-141_Delta",]$variant<-"Delta"
+allAA_data_with_refs[allAA_data_with_refs$run_variant == "139-141_Omicron",]$variant<-"Omicron"
+allAA_data_with_refs$variant<-factor(allAA_data_with_refs$variant, levels=c("WT", "Alpha", "Delta", "Omicron"))
+
+write.xlsx(allAA_data_with_refs, file= 'processed_spbs_aa_overall_table_forFig7.xlsx')
+
+
+###end of processing for Figure 7####
