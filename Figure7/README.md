@@ -5,3 +5,6 @@ The bloompaper....csv files are from the github for that paper: https://dms-vep.
 Note that the processed....xlsx input files here were generated in the script for Figure 6C and Supplemental Figures 13-14.
 
 The muttable....csv files were generated in the script for Supplemental Figure 9.
+
+The ..._AAs_by_main_variant_v25.xlsx files were generated in the script for Figure 5A.
+
