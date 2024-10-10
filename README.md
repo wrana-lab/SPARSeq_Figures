@@ -19,3 +19,19 @@ reshape2: https://cran.r-project.org/web/packages/reshape2/index.html
 
 matrixStats: https://cran.rstudio.com/web/packages/matrixStats/
 
+ggpattern: https://coolbutuseless.github.io/package/ggpattern/
+
+dplyr: https://dplyr.tidyverse.org/
+
+svglite: https://cran.r-project.org/web/packages/svglite/index.html
+
+patchwork: https://patchwork.data-imaginist.com/
+
+scales: https://scales.r-lib.org/
+
+RColorBrewer: https://cran.r-project.org/web/packages/RColorBrewer/index.html
+
+Biostrings: https://bioconductor.org/packages/release/bioc/html/Biostrings.html
+
+seqinr: https://cran.r-project.org/web/packages/seqinr/index.html
+
