@@ -16,7 +16,7 @@ table(re_filtered_maindataset$VariantGroup)
 table(re_filtered_maindataset$Variant_Name_New)
 
 sample_subset<-c()
-set.seed(2029)
+set.seed(100)
 for(i in c("Alpha", "Delta", "Omicron", "WT", "Alpha+", "Delta+", "Omicron+", "WT+", "Omicron BA.2.75",
            "Omicron BA.2.75+",   "Omicron BA.2/3",  "Omicron BA.2/3+",   "Omicron BA.4/5",  "Omicron BA.4/5+", "XBB.1.5", "XBB.1.5+")){
   ##NOT enough XBB or beta/gamma in our data to include those ones.
