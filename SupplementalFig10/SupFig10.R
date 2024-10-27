@@ -1,8 +1,9 @@
 #Script to select random samples and plot some top and non top read percents for Supplemental Figure 10 
 #this basically looked like same no matter what samples were selected 
 
-re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v25.xlsx")
-re_filtered_maindataset$Date.of.collection<-as.Date(re_filtered_maindataset$Date.of.collection, origin = "1899-12-30")
+re_filtered_maindataset<-read.xlsx("filtered_data_for_paper_v26.xlsx")
+re_filtered_maindataset$Date.of.collection <- as.Date(re_filtered_maindataset$Date.of.collection, 
+                                                      format="%m-%d-%Y", origin = "12-30-1899")
 head(re_filtered_maindataset)
 
 ####Get useful columns
@@ -15,7 +16,7 @@ table(re_filtered_maindataset$VariantGroup)
 table(re_filtered_maindataset$Variant_Name_New)
 
 sample_subset<-c()
-
+set.seed(2029)
 for(i in c("Alpha", "Delta", "Omicron", "WT", "Alpha+", "Delta+", "Omicron+", "WT+", "Omicron BA.2.75",
            "Omicron BA.2.75+",   "Omicron BA.2/3",  "Omicron BA.2/3+",   "Omicron BA.4/5",  "Omicron BA.4/5+", "XBB.1.5", "XBB.1.5+")){
   ##NOT enough XBB or beta/gamma in our data to include those ones.
@@ -74,7 +75,7 @@ setforgraphmini_new$PlusMinusOnly<-gsub("([a-zA-Z0-9])","",setforgraphmini_new$V
 setforgraphmini_new$PlusMinusOnly<-gsub("\\.","",setforgraphmini_new$PlusMinusOnly)
 
 
-pdf("TopSRBMreadPlots_V25Data.pdf", width = 4, height = 5)
+pdf("TopSRBMreadPlots_V26Data.pdf", width = 4, height = 5)
 for(i in unique(setforgraphmini_new$VariantOnly)) {
   subset1<-subset(setforgraphmini_new, setforgraphmini_new$VariantOnly == i)
   subset1<-subset(subset1, subset1$variable == "TopReadPercent")
