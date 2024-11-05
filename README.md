@@ -2,7 +2,7 @@
 
 By Lauren Caldwell and Andreea Obersterescu
 
-The analysis can be replicated starting from the main aggregated table of results, filtered_data_for_paper_v25.xlsx, available in this folder. Some subfolders also include other inputs or intermediate files. 
+The analysis can be replicated starting from the main aggregated table of results, filtered_data_for_paper_v26.xlsx, available in this folder. Some subfolders also include other inputs or intermediate files. 
 
 Essential R packages for the analysis include:
 
