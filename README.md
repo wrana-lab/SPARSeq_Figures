@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/858250938.svg)](https://doi.org/10.5281/zenodo.14182216)
+
 # SPARSeq_Figures: Code for figures for the Covid-19 SPARseq paper, 2024. 
 
 By Lauren Caldwell and Andreea Obersterescu
